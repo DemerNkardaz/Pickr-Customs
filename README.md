@@ -36,7 +36,7 @@ Is not required, just stylizing my customs.
 #
 
 #### Color Copy
-This is mini-additional make you able to copy color from pallete with selected color mode (HEXA/RGA/HSVA/HSLA) to the clipboard.
+This is mini-addition make you able to copy color from pallete with selected color mode (HEXA/RGA/HSVA/HSLA) to the clipboard on double-click to swatch.
 <details>
   <summary>See</summary>
 <p align="center">
