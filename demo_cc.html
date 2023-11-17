@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>CopyColor</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/classic.min.css" />
+        <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.min.js"></script>
+    </head>
+
+    <body>
+        <div id="color-picker"></div>
+        <div class="container mt-3">
+            <div class="input-group mb-3 mx-auto w-50 position-relative">
+                <input type="text" class="form-control" id="colorInput" placeholder="Color — paste clipboard here" />
+                <span class="input-group-text" id="colorPreview" style="height:auto"></span>
+            </div>
+        </div>
+        <script>
+	function updateColorInfo(pickr) {
+		const colorInputValue = $("#colorInput").val(); // Получаем значение из colorInput
+		const colorPreview = $("#colorPreview");
+		if(colorInputValue.includes("cmyk")) {
+			// Если colorInputValue содержит "cmyk", то конвертируем в RGB
+			const rgbColor = convertCmykToRgb(colorInputValue);
+			colorPreview.css("background-color", rgbColor);
+		} else if(colorInputValue.includes("hsva")) {
+			// Если colorInputValue содержит "hsva", то конвертируем в HSLA
+			const hslaColor = convertHsvaToHsla(colorInputValue);
+			colorPreview.css("background-color", hslaColor);
+		} else {
+			// В противном случае просто устанавливаем цвет
+			colorPreview.css("background-color", colorInputValue);
+		}
+	}
+
+	function convertCmykToRgb(cmykColor) {
+		const cmykValues = cmykColor.match(/[\d.]+/g).map(Number);
+		if(cmykValues.some(isNaN)) {
+			return 'rgb(0, 0, 0)';
+		}
+		const r = 255 * (1 - cmykValues[0] / 100) * (1 - cmykValues[3] / 100);
+		const g = 255 * (1 - cmykValues[1] / 100) * (1 - cmykValues[3] / 100);
+		const b = 255 * (1 - cmykValues[2] / 100) * (1 - cmykValues[3] / 100);
+		if(isNaN(r) || isNaN(g) || isNaN(b)) {
+			return 'rgb(0, 0, 0)';
+		}
+		return `rgb(${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)})`;
+	}
+
+	function convertHsvaToHsla(hsvaColor) {
+		const hsvaValues = hsvaColor.match(/[\d.]+/g).map(Number);
+		if(hsvaValues.some(isNaN)) {
+			return 'hsla(NaN, NaN%, NaN%, NaN)';
+		}
+		const h = hsvaValues[0];
+		const s = hsvaValues[1] / 100;
+		const v = hsvaValues[2] / 100;
+		const a = hsvaValues[3];
+		const l = (2 - s) * v / 2;
+		const sat = l < 0.5 ? s * v / (l * 2) : s * v / (2 - l * 2);
+		if(isNaN(h) || isNaN(sat) || isNaN(l) || isNaN(a)) {
+			return 'hsla(NaN, NaN%, NaN%, NaN)';
+		}
+		return `hsla(${h}, ${Math.round(sat * 100)}%, ${Math.round(l * 100)}%, ${a})`;
+	}
+	$("#colorInput").on("input", function() {
+		updateColorInfo(pickr);
+	});
+	</script>
+        <style>
+	#colorInput,
+	#colorInput::placeholder {
+		text-align: center;
+	}
+
+	#colorPreview {
+		width: 128px;
+		height: 128px;
+		border: 1px solid #ccc;
+		display: inline-block;
+	}
+
+	.input-group::before {
+		position: absolute;
+		content: "";
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background: url("data:image/svg+xml;utf8, <svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 2 2\"><path fill=\"white\" d=\"M1,0H2V1H1V0ZM0,1H1V2H0V1Z\"/><path fill=\"gray\" d=\"M0,0H1V1H0V0ZM1,1H2V2H1V1Z\"/></svg>");
+		background-size: auto;
+		background-size: .5em;
+		border-radius: .15em;
+		z-index: -1;
+	}
+	</style>
+        <script>
+	// Initialize Pickr
+	const pickr = Pickr.create({
+		el: "#color-picker",
+		theme: "classic",
+		default: "#3498db",
+		swatches: ["rgba(244, 67, 54, 1)", "rgba(233, 30, 99, 0.95)", "rgba(156, 39, 176, 0.9)", "rgba(103, 58, 183, 0.85)", "rgba(63, 81, 181, 0.8)", "rgba(33, 150, 243, 0.75)", "rgba(3, 169, 244, 0.7)", "rgba(0, 188, 212, 0.7)", "rgba(0, 150, 136, 0.75)", "rgba(76, 175, 80, 0.8)", "rgba(139, 195, 74, 0.85)", "rgba(205, 220, 57, 0.9)", "rgba(255, 235, 59, 0.95)", "rgba(255, 193, 7, 1)"],
+		components: {
+			preview: true,
+			opacity: true,
+			hue: true,
+			interaction: {
+				hex: true,
+				rgba: true,
+				hsla: true,
+				hsva: true,
+				cmyk: true,
+				input: true,
+				clear: true,
+				save: true
+			}
+		}
+	});
+
+	function convertColor(color, inputValue) {
+		let roundedColorString = null;
+		if(typeof color === "string") {
+			color = pickr.Color.fromString(color);
+		}
+		if(inputValue === "HEXA") {
+			roundedColorString = color.toHEXA().toString();
+		} else if(inputValue === "RGBA") {
+			roundedColorString = `rgba(${Math.round(color.toRGBA()[0])}, ${Math.round(color.toRGBA()[1])}, ${Math.round(color.toRGBA()[2])}, ${color.a})`;
+		} else if(inputValue === "CMYK") {
+			roundedColorString = `cmyk(${Math.round(color.toCMYK()[0])}%, ${Math.round(color.toCMYK()[1])}%, ${Math.round(color.toCMYK()[2])}%, ${Math.round(color.toCMYK()[3])}%)`;
+		} else if(inputValue === "HSLA") {
+			roundedColorString = `hsla(${Math.round(color.toHSLA()[0])}, ${Math.round(color.toHSLA()[1])}%, ${Math.round(color.toHSLA()[2])}%, ${color.a})`;
+		} else if(inputValue === "HSVA") {
+			roundedColorString = `hsva(${Math.round(color.toHSVA()[0])}, ${Math.round(color.toHSVA()[1])}%, ${Math.round(color.toHSVA()[2])}%, ${color.a})`;
+		}
+		return roundedColorString;
+	}
+	$("[aria-label='color swatch']").on("dblclick", function() {
+		var valueElement = $(".pcr-type.active");
+		var inputValue = valueElement.data("type");
+		const color = pickr.getColor($(this)[0]);
+		if(color) {
+			let roundedColorString = convertColor(color, inputValue);
+			navigator.clipboard.writeText(`${roundedColorString}`);
+			$(this).addClass('on_overlay_ofclick');
+			setTimeout(() => {
+				$(this).removeClass('on_overlay_ofclick');
+			}, 1000);
+		}
+	});
+	</script>
+        <style>
+	[aria-label='color swatch'].on_overlay_ofclick {
+		--pcr-color: #4082eecc !important;
+		z-index: 100;
+	}
+
+	[aria-label='color swatch'].on_overlay_ofclick::after {
+		content: '✓' !important;
+		font-size: 20px !important;
+		color: white;
+		line-height: 1.1;
+	}
+
+	.pcr-app {
+		visibility: visible !important;
+		opacity: 1;
+		left: 50% !important;
+		top: 400px !important;
+		transform: translate(-50%, 0);
+		position: absolute !important;
+	}
+
+	.pickr {
+		opacity: 0;
+		margin-bottom: 50px;
+	}
+
+	html,
+	body {
+		height: 100%;
+		margin: 0;
+	}
+
+	body {
+		background: rgb(29, 0, 79);
+		background: linear-gradient(193deg, rgba(29, 0, 79, 1) 0%, rgba(73, 5, 154, 1) 16%, rgba(80, 64, 157, 1) 35%, rgba(0, 212, 255, 1) 80%, rgba(254, 254, 254, 1) 100%);
+		background-size: cover;
+	}
+	</style>
+    </body>
+
+</html>
