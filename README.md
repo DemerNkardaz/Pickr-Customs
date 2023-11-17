@@ -49,49 +49,71 @@ This is mini-addition make you able to copy color from pallete with selected col
 ##### JS
 ```js
     // "pickr" must be available in code for this, i.e. const pickr = Pickr.create({...)};
-function convertColor(color, inputValue) {
-    let roundedColorString = null;
-    if (typeof color === "string") {
-        color = pickr.Color.fromString(color);
+    function convertColor(color, inputValue) {
+        let roundedColorString = null;
+        if (typeof color === "string") {
+            color = pickr.Color.fromString(color);
+        }
+        if (inputValue === "HEXA") {
+            roundedColorString = color.toHEXA().toString();
+        } else if (inputValue === "RGBA") {
+            roundedColorString = `rgba(${Math.round(color.toRGBA()[0])}, ${Math.round(color.toRGBA()[1])}, ${Math.round(color.toRGBA()[2])}, ${color.a})`;
+        } else if (inputValue === "CMYK") {
+            roundedColorString = `cmyk(${Math.round(color.toCMYK()[0])}%, ${Math.round(color.toCMYK()[1])}%, ${Math.round(color.toCMYK()[2])}%, ${Math.round(color.toCMYK()[3])}%)`;
+        } else if (inputValue === "HSLA") {
+            roundedColorString = `hsla(${Math.round(color.toHSLA()[0])}, ${Math.round(color.toHSLA()[1])}%, ${Math.round(color.toHSLA()[2])}%, ${color.a})`;
+        } else if (inputValue === "HSVA") {
+            roundedColorString = `hsva(${Math.round(color.toHSVA()[0])}, ${Math.round(color.toHSVA()[1])}%, ${Math.round(color.toHSVA()[2])}%, ${color.a})`;
+        }
+        return roundedColorString;
     }
-    if (inputValue === "HEXA") {
-        roundedColorString = color.toHEXA().toString();
-    } else if (inputValue === "RGBA") {
-        roundedColorString = `rgba(${Math.round(color.toRGBA()[0])}, ${Math.round(color.toRGBA()[1])}, ${Math.round(color.toRGBA()[2])}, ${color.a})`;
-    } else if (inputValue === "CMYK") {
-        roundedColorString = `cmyk(${Math.round(color.toCMYK()[0])}%, ${Math.round(color.toCMYK()[1])}%, ${Math.round(color.toCMYK()[2])}%, ${Math.round(color.toCMYK()[3])}%)`;
-    } else if (inputValue === "HSLA") {
-        roundedColorString = `hsla(${Math.round(color.toHSLA()[0])}, ${Math.round(color.toHSLA()[1])}%, ${Math.round(color.toHSLA()[2])}%, ${color.a})`;
-    } else if (inputValue === "HSVA") {
-        roundedColorString = `hsva(${Math.round(color.toHSVA()[0])}, ${Math.round(color.toHSVA()[1])}%, ${Math.round(color.toHSVA()[2])}%, ${color.a})`;
-    }
-    return roundedColorString;
-}
-	$("[aria-label='color swatch']").on("dblclick", function() {
-		var valueElement = $(".pcr-type.active");
-		var inputValue = valueElement.data("type");
-		const color =pickr.getColor($(this)[0]);
-		if(color) {
-			let roundedColorString = convertColor(color, inputValue);
-			navigator.clipboard.writeText(`${roundedColorString}`);
-			$(this).addClass('on_overlay_ofclick');
-			setTimeout(() => {
-				$(this).removeClass('on_overlay_ofclick');
-			}, 1000);
-		}
-	});
+    $("[aria-label='color swatch']").on("dblclick", function () {
+        var valueElement = $(".pcr-type.active");
+        var inputValue = valueElement.data("type");
+        const color = pickr.getColor($(this)[0]);
+        if (color) {
+            let roundedColorString = convertColor(color, inputValue);
+            navigator.clipboard.writeText(`${roundedColorString}`);
+
+            if ($(this).hasClass('on_overlay_ofclick')) {
+                $(this).removeClass('on_overlay_ofclick')
+                clearTimeout(endTimeout);
+                setTimeout(() => { $(this).addClass('on_overlay_ofclick'); }, 10);
+            } else {
+                $(this).addClass('on_overlay_ofclick');
+            }
+            endTimeout = setTimeout(() => {
+                $(this).removeClass('on_overlay_ofclick');
+            }, 1400);
+        }
+    });
 ```
 ##### Style
 ```css
 [aria-label='color swatch'].on_overlay_ofclick {
-    --pcr-color: #4082eecc !important;
-    z-index: 100;
+    background: linear-gradient(var(--pcr-color), var(--pcr-color)), url("data:image/svg+xml;utf8, <svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 2 2\"><path fill=\"white\" d=\"M1,0H2V1H1V0ZM0,1H1V2H0V1Z\"/><path fill=\"gray\" d=\"M0,0H1V1H0V0ZM1,1H2V2H1V1Z\"/></svg>") !important;
+    background-size: 6px !important;
 }
+
+[aria-label='color swatch'].on_overlay_ofclick::before {
+    animation: fadeOut 1s ease 0.5s forwards;
+}
+
 [aria-label='color swatch'].on_overlay_ofclick::after {
-    content: '✓' !important;
-    font-size: 20px !important;
-    color: white;
-    line-height: 1.1;
+    background-image: url('data:image/svg+xml;utf8, <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 28 26" width="24"><rect fill="none" height="24" width="24"/><path fill="white" d="M22,5.18L10.59,16.6l-4.24-4.24l1.41-1.41l2.83,2.83l10-10L22,5.18z M19.79,10.22C19.92,10.79,20,11.39,20,12 c0,4.42-3.58,8-8,8s-8-3.58-8-8c0-4.42,3.58-8,8-8c1.58,0,3.04,0.46,4.28,1.25l1.44-1.44C16.1,2.67,14.13,2,12,2C6.48,2,2,6.48,2,12 c0,5.52,4.48,10,10,10s10-4.48,10-10c0-1.19-0.22-2.33-0.6-3.39L19.79,10.22z"/><style xmlns="" type="text/css" id="igtranslator-color"/></svg>') !important;
+    background-blend-mode: luminosity;
+    transition: all 0.5s ease;
+    z-index: 100;
+    opacity: 0.5;
+    animation: fadeOut 1s ease 0.5s forwards;
+}
+
+@keyframes fadeOut {
+
+    100% {
+        opacity: 0;
+        filter: brightness(200%);
+    }
 }
 ```
 
