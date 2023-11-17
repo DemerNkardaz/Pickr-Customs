@@ -104,9 +104,9 @@ function convertColor(color, inputValue) {
 - Moveable and resizeable pickr window with JQuery UI and height-resizeable color parameters subwindow
 - Options menu with language select, custom palette as TXT column file, some other settings.
 
-<p align="center">
-	<h4>Some of tests</h4>
-	<img src="https://i.imgur.com/hVDbWer.gif">
-</p>
+<h4 align="center">
+	Some of tests
+	<img src="https://i.imgur.com/UyaXp0l.gif">
+</h4>
 
 
