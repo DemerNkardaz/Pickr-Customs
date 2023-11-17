@@ -40,7 +40,7 @@ This is mini-addition make you able to copy color from pallete with selected col
 <details>
   <summary>See</summary>
 <p align="center">
-  <img src="https://i.imgur.com/hVDbWer.gif">
+  <img src="https://i.imgur.com/o6GL3fO.gif">
 </p>
 
 <h4 align="center"><a href="https://demernkardaz.github.io/Pickr-Customs/demo_cc.html" target="_blank">Demo</a></h4>
