@@ -106,7 +106,10 @@ function convertColor(color, inputValue) {
 
 <h4 align="center">
 	Some of tests
-	<img src="https://i.imgur.com/UyaXp0l.gif">
 </h4>
+<p align="center">
+	<img src="https://i.imgur.com/UyaXp0l.gif">
+</p>
+
 
 
