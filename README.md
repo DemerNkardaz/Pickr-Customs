@@ -40,37 +40,37 @@ This is mini-additional make you able to copy color from pallete with selected c
 ##### JS
 ```js
     // "pickr" must be available in code for this, i.e. const pickr = Pickr.create({...)};
-    function convertColor(color, inputValue) {
-        let roundedColorString = null;
-        if (typeof color === "string") {
-            color = new pickr.Color(color);
-        }
-        if (inputValue === "HEXA") {
-            roundedColorString = color.toHEXA().toString();
-        } else if (inputValue === "RGBA") {
-            roundedColorString = "rgba(" + color.toRGBA().map(value => Math.round(value)).join(", ") + ")";
-        } else if (inputValue === "CMYK") {
-            roundedColorString = "cmyk(" + color.toCMYK().map(value => Math.round(value) + "%").join(", ") + ")";
-        } else if (inputValue === "HSLA") {
-            roundedColorString = "hsla(" + color.toHSLA().map((value, index) => (index === 1 || index === 2 ? Math.round(value) + "%" : Math.round(value))).join(", ") + ")";
-        } else if (inputValue === "HSVA") {
-            roundedColorString = "hsva(" + color.toHSVA().map((value, index) => (index === 1 || index === 2 ? Math.round(value) + "%" : Math.round(value))).join(", ") + ")";
-        }
-        return roundedColorString;
+function convertColor(color, inputValue) {
+    let roundedColorString = null;
+    if (typeof color === "string") {
+        color = pickr.Color.fromString(color);
     }
-    $("[aria-label='color swatch']").on("dblclick", function () {
-        var valueElement = $(".pcr-type.active");
-        var inputValue = valueElement.data("type");
-        const color = pickr.getColor();
-        if (color) {
-            let roundedColorString = convertColor(color, inputValue);
-            navigator.clipboard.writeText(`${roundedColorString}`);
-            $(this).addClass('on_overlay_ofclick');
-            setTimeout(() => {
-                $(this).removeClass('on_overlay_ofclick');
-            }, 1000);
-        }
-    });
+    if (inputValue === "HEXA") {
+        roundedColorString = color.toHEXA().toString();
+    } else if (inputValue === "RGBA") {
+        roundedColorString = `rgba(${Math.round(color.toRGBA()[0])}, ${Math.round(color.toRGBA()[1])}, ${Math.round(color.toRGBA()[2])}, ${color.a})`;
+    } else if (inputValue === "CMYK") {
+        roundedColorString = `cmyk(${Math.round(color.toCMYK()[0])}%, ${Math.round(color.toCMYK()[1])}%, ${Math.round(color.toCMYK()[2])}%, ${Math.round(color.toCMYK()[3])}%)`;
+    } else if (inputValue === "HSLA") {
+        roundedColorString = `hsla(${Math.round(color.toHSLA()[0])}, ${Math.round(color.toHSLA()[1])}%, ${Math.round(color.toHSLA()[2])}%, ${color.a})`;
+    } else if (inputValue === "HSVA") {
+        roundedColorString = `hsva(${Math.round(color.toHSVA()[0])}, ${Math.round(color.toHSVA()[1])}%, ${Math.round(color.toHSVA()[2])}%, ${color.a})`;
+    }
+    return roundedColorString;
+}
+	$("[aria-label='color swatch']").on("dblclick", function() {
+		var valueElement = $(".pcr-type.active");
+		var inputValue = valueElement.data("type");
+		const color =pickr.getColor($(this)[0]);
+		if(color) {
+			let roundedColorString = convertColor(color, inputValue);
+			navigator.clipboard.writeText(`${roundedColorString}`);
+			$(this).addClass('on_overlay_ofclick');
+			setTimeout(() => {
+				$(this).removeClass('on_overlay_ofclick');
+			}, 1000);
+		}
+	});
 ```
 ##### Style
 ```css
