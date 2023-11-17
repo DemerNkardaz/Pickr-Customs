@@ -94,8 +94,8 @@ function convertColor(color, inputValue) {
     line-height: 1.1;
 }
 ```
-</details>
 
+</details>
 
 ### Plans
 - Drag&drop swatch for apply color to the object (First steps maked)
