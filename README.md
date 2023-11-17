@@ -95,3 +95,18 @@ function convertColor(color, inputValue) {
 }
 ```
 </details>
+
+
+### Plans
+- Drag&drop swatch for apply color to the object (First steps maked)
+- Big swatch pallete (currently WIP JSON contains 227 [Traditional colors of Japan](https://en.wikipedia.org/wiki/Traditional_colors_of_Japan) + tooltips of color names `!WARNING: Using of this JSON will make you pickr loading some laggy on start`
+- Ability to add own swatches from pickr to custom palette tab, ability to remove swatch from custom palette `(half-ready, need fixes; ready - add to palette, save palette on localstorage, remove from palette with local storage, bootstrap 5 container with tab)`
+- Moveable and resizeable pickr window with JQuery UI and height-resizeable color parameters subwindow
+- Options menu with language select, custom palette as TXT column file, some other settings.
+
+<p align="center">
+	<h4>Some of tests</h4>
+	<img src="https://i.imgur.com/hVDbWer.gif">
+</p>
+
+
